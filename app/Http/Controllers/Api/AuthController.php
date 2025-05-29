@@ -3,10 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-
 use App\Models\User;
+
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
@@ -25,20 +26,32 @@ class AuthController extends Controller
             'password' => 'required|string|min:8|confirmed',
         ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+        try {
+            DB::beginTransaction();
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+            ]);
+    
+            $token = $user->createToken('auth-token')->plainTextToken;
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => 'User registered successfully',
+                'user' => $user,
+                'token' => $token,
+            ], 201);
+        } catch (\Throwable $th) {
+            //throw $th;
+            DB::rollBack();
+            error_log($th->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Server error, user registration failed',
+            ], 500);
+        }
 
-        $token = $user->createToken('auth-token')->plainTextToken;
-
-        return response()->json([
-            'success' => true,
-            'message' => 'User registered successfully',
-            'user' => $user,
-            'token' => $token,
-        ], 201);
     }
 
     /* 
