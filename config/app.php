@@ -123,4 +123,12 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+
+    // For Rest Api Configuration
+    'frontend_url' => env('FRONTEND_URL', 'http://localhost:3000'),
+    'frontend_forgot_password_url' => env('FRONTEND_FORGOT_PASSWORD_URL', 'http://localhost:3000/auth/password/reset'),
+    'frontend_login_url' => env('FRONTEND_LOGIN_URL', 'http://localhost:3000/auth/login'),
+    'frontend_register_url' => env('FRONTEND_REGISTER_URL', 'http://localhost:3000/auth/login'),
+    'frontend_error_url' => env('FRONTEND_ERROR_URL', 'http://localhost:3000/auth/password/reset/error'),
+    'frontend_verify_email_error_url' => env('FRONTEND_VERIFY_EMAIL_ERROR_URL', 'http://localhost:3000/auth/verify-email-error'),
 ];
